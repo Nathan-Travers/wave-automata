@@ -218,8 +218,8 @@ def main1():
 
 
 
-def update_grid2(grid, randomise=False, diagonal_interaction=False):
-    grid_dimensions = grid.shape
+def update_grid2(grid):
+    grid_dimensions = grid.shape[:2]
     grid_shuffled = list(zip([idx for idx in range(grid_dimensions[0])], grid))
     shuffle(grid_shuffled)
     for row_number, row in grid_shuffled:
@@ -231,84 +231,88 @@ def update_grid2(grid, randomise=False, diagonal_interaction=False):
         else:
             row_chosen = row_unshuffled"""
         for column_number, cell in row_shuffled:
-            #column_number = len(row)-column_number-1
             cell_above = 0
             cell_below = 0
             cell_left = 0
             cell_right = 0
-            friends = 0
 
             """if row_number == 0:
                 cell_above = (row_number, column_number)
                 friends -= 1
             else:"""
             cell_above = (row_number - 1, column_number) #negatives wraparound anyway
-            cell_upleft = (row_number - 1, column_number - 1)
             """if column_number == 0:
                 cell_left = (row_number, column_number)
                 friends -= 1
             else:"""
             cell_left = (row_number, column_number - 1)
 
-            col = column_number #column_number + 1 used below so use this if to fix it
             if column_number != grid_dimensions[1] - 1: #if not end of row
                 cell_right = (row_number, column_number + 1)
-                cell_upright = (row_number - 1, column_number + 1)
             else:
                 cell_right = (row_number, 0)
                 """cell_right = (row_number, column_number)
                 friends -= 1"""
-                cell_upright = (row_number - 1, 0)
-                col = -1
 
             if row_number != grid_dimensions[0] - 1: #wraparound only needed for overflow
                 cell_below = (row_number + 1, column_number) #addition overflow
-                cell_downleft = (row_number + 1, column_number - 1)
-                cell_downright = (row_number + 1, col + 1) #col, -1+1=0 if wraparound
             else:
                 cell_below = (0, column_number)
                 """cell_below = (row_number, column_number)
                 friends -= 1"""
-                cell_downleft = (0, column_number - 1)
-                cell_downright = (0, col + 1)
 
             neighbours = [cell_above, cell_below, cell_left, cell_right]
-            if diagonal_interaction:
-                neighbours.extend([cell_upleft, cell_downleft, cell_upright, cell_downright])
             shuffle(neighbours)
-            
-            #friends = 0
-            enemy = (row_number, column_number)
-            for neighbour in neighbours:
+
+            friends = 0
+            cell_colour, cell_age = cell
+            enemy_pos = (row_number, column_number)
+            for neighbour_pos in neighbours:
                 #neighbour = choice(neighbours)
                 #cell_neighbour_diff = abs(cell - grid[neighbour])
-                neighbour_value = grid[neighbour]
-                if cell == neighbour_value:#cell_neighbour_diff == 0:
+                neighbour_colour, neighbour_age = grid[neighbour_pos]
+                if cell_colour == neighbour_colour:#cell_neighbour_diff == 0:
                     friends += 1
                 else:#if cell_neighbour_diff < 0.3 or cell_neighbour_diff > 0.8:
-                    enemy = neighbour
+                    enemy_pos = neighbour_pos
 
-            enemy_value = grid[enemy]
-            #print(friends)
-            if friends >= 1:# and randint(0,4) != 0:
-                enemy_value = cell
-            elif randint(0,5000)==0:
-                cell = enemy_value
-                
+            enemy_colour, enemy_age = grid[enemy_pos]
+            if enemy_pos != (row_number, column_number):
+                if friends >= 1:# and randint(0,4) != 0:
+                    #if enemy_age > cell_age:
+                    #    enemy_colour = cell_colour
+                    #    enemy_age = 0
+                    if enemy_age > cell_age or randint(0,4)==0: #enemy_age < cell_age (without or) creates a cool blood-cell looking pattern
+                        enemy_colour = cell_colour
+                        enemy_age = 0
+                elif randint(0,5000)==0:
+                    cell_colour = enemy_colour
+                    cell_age = 0
+            if enemy_age != 200:
+                enemy_age += 1
+                    
+            if cell_age != 200:
+                cell_age += 1
+            cell = (cell_colour, cell_age)
+            enemy = (enemy_colour, enemy_age)
             grid[row_number, column_number] = cell
-            grid[enemy] = enemy_value
+            grid[enemy_pos] = enemy
             
 def generate_canvas2(grid, grid_dimensions):
     size = 1
-    canvas = full([size*grid_dimensions[0],size*grid_dimensions[1]], 0)
+    canvas = full([size*grid_dimensions[0],size*grid_dimensions[1], 4], [0,0,0,0])
     for row_no, row in enumerate(grid):
         for pixel_no, pixel in enumerate(row):
-            canvas[(size*row_no):(size + size*row_no), (size*pixel_no):(size + size*pixel_no)] = pixel*255
+            colour, age = pixel
+            canvas[(size*row_no):(size + size*row_no), (size*pixel_no):(size + size*pixel_no)] = [colour*255, 0, 0, 255-age]
     return canvas
 
 def main2():
     grid_dimensions=(100,100)
-    grid = rand(*grid_dimensions)
+    #grid = rand(*grid_dimensions)
+    grid = asarray([(rand(), 0) for _ in range(100*100)])
+    grid = grid.reshape(100,100,2)
+    #grid = full((*grid_dimensions, 2), )
         
     fig = plt.figure()
     ax = fig.add_subplot(1,1,1)
