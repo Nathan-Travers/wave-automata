@@ -1,3 +1,4 @@
+## Mode 0
 from numpy import array, arange, reshape, full
 from numpy.random import rand
 from random import randint, shuffle
@@ -102,17 +103,7 @@ if cell < cell_neighbour_average:
 else:
     cell -= .1"""
 
-
-
-
-
-
-
-
-
-
-
-#main()
+## Mode 1
 
 #(type,life,attack)
 def battle(grid):
@@ -202,18 +193,9 @@ def main1():
     ani = animation.FuncAnimation(fig, update_image, interval=4)
     plt.show()#block = False
 
+## Mode 2
 
-
-
-
-
-
-
-
-
-
-
-def update_grid2(grid, x):
+def update_grid2(grid):
     grid_dimensions = grid.shape[:2]
     #grid_shuffled = list(zip(, grid))
     #shuffle(grid_shuffled)
@@ -226,44 +208,42 @@ def update_grid2(grid, x):
         
         #row_shuffled = list(zip([idx for idx in range(grid_dimensions[1])], row))
         #shuffle(row_shuffled)
-        """row_unshuffled = enumerate(row)
-        if randint(0,4) != 0:
-            row_chosen = row_shuffled
-        else:
-            row_chosen = row_unshuffled"""
+        #deleted code here randomly switched between shuffled and unshuffled row
             
         for column_number in column_numbers:
             #if randint(0,25000) == 0:
             #    grid[row_number, column_number:randint(0,99-column_number)] = (grid[row_number, column_number][0],0)
+            #this code randomly shoots a line rightwards along the current row
             cell_above = 0
             cell_below = 0
             cell_left = 0
             cell_right = 0
 
-            """if row_number == 0:
-                cell_above = (row_number, column_number)
-                friends -= 1
-            else:"""
+#            if row_number == 0:
+#                cell_above = (row_number, column_number)
+#                friends -= 1
+#            else:
             cell_above = (row_number - 1, column_number) #negatives wraparound anyway
-            """if column_number == 0:
-                cell_left = (row_number, column_number)
-                friends -= 1
-            else:"""
+#            if column_number == 0:
+#                cell_left = (row_number, column_number)
+#                friends -= 1
+#            else:
             cell_left = (row_number, column_number - 1)
 
             if column_number != grid_dimensions[1] - 1: #if not end of row
                 cell_right = (row_number, column_number + 1)
             else:
                 cell_right = (row_number, 0)
-                """cell_right = (row_number, column_number)
-                friends -= 1"""
+#                cell_right = (row_number, column_number)
+#                friends -= 1
 
             if row_number != grid_dimensions[0] - 1: #wraparound only needed for overflow
                 cell_below = (row_number + 1, column_number) #addition overflow
             else:
                 cell_below = (0, column_number)
-                """cell_below = (row_number, column_number)
-                friends -= 1"""
+#                cell_below = (row_number, column_number)
+#                friends -= 1
+#all this commented code removes wraparound
 
             neighbours = [cell_above, cell_below, cell_left, cell_right]
             shuffle(neighbours)
@@ -272,8 +252,8 @@ def update_grid2(grid, x):
             cell_colour, cell_age = grid[row_number, column_number] #col and row number were backwards, cool y=x reflect wave pattern tho
             enemy_pos = (row_number, column_number)
             for neighbour_pos in neighbours:
-                #neighbour = choice(neighbours)
-                #cell_neighbour_diff = abs(cell - grid[neighbour])
+#                neighbour = choice(neighbours)
+#                cell_neighbour_diff = abs(cell - grid[neighbour])
                 neighbour_colour, neighbour_age = grid[neighbour_pos]
                 if cell_colour == neighbour_colour:#cell_neighbour_diff == 0:
                     friends += 1
@@ -290,40 +270,35 @@ def update_grid2(grid, x):
                         else:
                             enemy_colour = cell_colour # i can think of better rulesets now i just need to rewrite this entire block make it variable
                             enemy_age = cell_age - 1# + 1 #- 2#enemy_age - enemy_age/4
-                    #elif enemy_age == cell_age:
-                     #   enemy_age -= 
-                        #enemy_age += 10
-                        #cell_age -= 100
-                        pass
-                        """if randint(0,2)!=0:
-                            enemy_colour = cell_colour
-                            #cell_age -= 10
-                            enemy_age = - enemy_age# - 10#cell_age
-                        else:
-                            pass
-                            #enemy_age -= 30
-                            #cell_colour = enemy_colour
-                            #cell_age = enemy_age - 10"""
-
-                    #elif randint(0,200000)==0:
-                    #    pass
-                        #cell_age += 2
-                #elif friends < 2 and cell_age > 0:
-                #    cell_colour = enemy_colour
-                #    cell_age = 0
-                elif randint(0,10000)==0:
+#                    elif enemy_age == cell_age:
+#                        pass
+#                        if randint(0,2)!=0:
+#                            enemy_colour = cell_colour
+#                            #cell_age -= 10
+#                            enemy_age = - enemy_age# - 10#cell_age
+#                        else:
+#                            pass
+#                            #enemy_age -= 30
+#                            #cell_colour = enemy_colour
+#                            #cell_age = enemy_age - 10
+#                elif friends < 2 and cell_age > 0:
+#                    cell_colour = enemy_colour
+#                    cell_age = 0
+# definitely try making friends heal each other maybe that will stop the centre capturing chaos and create a true fight
+#, but healing would have to cost something, maybe they give their youth to the friend cell but how will direction work?
+                elif randint(0,10000)==0: # this creates the teams from the teamless noise
                     cell_colour = enemy_colour
                     #cell_age = enemy_age - 10
             else: #no enemies
-                """young_neighbour = False
-                for neighbour_pos in neighbours:
-                    neighbour_colour, neighbour_age = grid[neighbour_pos]
-                    if abs(cell_age - neighbour_age) > 20: #already a young warrior around
-                        young_neighbour = True
-                        break
-                if not young_neighbour:
-                    cell_age -= 21"""
-                #cell_age += 1
+                pass
+#                young_neighbour = False
+#                for neighbour_pos in neighbours:
+#                    neighbour_colour, neighbour_age = grid[neighbour_pos]
+#                    if abs(cell_age - neighbour_age) > 20: #already a young warrior around
+#                        young_neighbour = True
+#                        break
+#                if not young_neighbour:
+#                    cell_age -= 21
 
             if enemy_age != 200:
                 enemy_age += 1
@@ -350,17 +325,14 @@ def generate_canvas2(grid, grid_dimensions):
 
 def main2():
     grid_dimensions=(80,80)
-    #grid = rand(*grid_dimensions)
     grid = asarray([(rand(), 0) for _ in range(grid_dimensions[0]*grid_dimensions[1])])
     grid = grid.reshape(grid_dimensions[0],grid_dimensions[1],2)
-    #grid = full((*grid_dimensions, 2), )
         
     fig = plt.figure()
     ax = fig.add_subplot(1,1,1)
     im = ax.imshow(generate_canvas2(grid, grid_dimensions), animated=True)
-    x=0
     def update_image(image):
-        update_grid2(grid, x)#randomise=1)
+        update_grid2(grid)#randomise=1)
         canvas = generate_canvas2(grid, grid_dimensions)
         im.set_array(canvas)
 
@@ -369,11 +341,14 @@ def main2():
 
 if __name__=="__main__":
     from time import sleep
-    if bool(input("Nothing for mode 0, anything for mode 1\nEnter input: ")):
-        sleep(5)
-        main()
-    else:
-        sleep(5)
-        main1()
+    while True:
+        choice_mode = input("Mode 0, 1 or 2?\Mode: ")
+        if choice_mode.isnumeric() and int(choice_mode) in range(0,3): #python has lazy evaluation so won't evaluate second condition if first is false
+            break                                                      #so we won't get TypeError from running int on non-numeric text
+                                                                       # I really like the way this is written but its less safe and makes
+                                                                       # us execute int(choice_mode) twice so I'll write it the safe way next commit
+    choices = {0:"main()", 1:"main1()", 2:"main2()"}
+    #sleep(5)
+    eval(choices[int(choice_mode)]) #I don't think eval is very safe either but there is no risk in this program
 
 #this code is ungodly amounts of messy because its just freeflow building stuff, still I'll make it cleaner next time...
